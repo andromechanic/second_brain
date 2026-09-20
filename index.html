@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="knowledge-id" content="brain-root">
+  <meta name="title" content="Akhil's Digital Brain">
+  <meta name="type" content="root">
+  <meta name="tags" content="brain,index">
+  <title>Akhil's Digital Brain</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <main class="site">
+    <header class="site-header">
+      <h1 class="site-title">Akhil's Digital Brain</h1>
+      <p class="site-subtitle">A living map of knowledge, ideas and connections.</p>
+    </header>
+
+    <section class="brain-shell" aria-label="Digital Brain visualization">
+      <svg class="brain-canvas" viewBox="0 0 1000 520" role="img"
+           aria-label="Knowledge graph visualization">
+        <defs>
+          <filter id="glow">
+            <feGaussianBlur stdDeviation="4" result="blur"/>
+            <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+          </filter>
+        </defs>
+
+        <g class="brain-edge" opacity=".8">
+          <line x1="500" y1="260" x2="270" y2="140"/>
+          <line x1="500" y1="260" x2="730" y2="140"/>
+          <line x1="500" y1="260" x2="270" y2="380"/>
+          <line x1="500" y1="260" x2="730" y2="380"/>
+        </g>
+
+        <g class="brain-node" filter="url(#glow)">
+          <a href="#knowledge">
+            <circle cx="500" cy="260" r="70"/>
+            <text x="500" y="256">AKHIL'S</text>
+            <text x="500" y="276">BRAIN</text>
+          </a>
+        </g>
+
+        <g class="brain-node">
+          <circle cx="270" cy="140" r="48"/>
+          <text x="270" y="145">AI</text>
+        </g>
+
+        <g class="brain-node">
+          <circle cx="730" cy="140" r="48"/>
+          <text x="730" y="145">Math</text>
+        </g>
+
+        <g class="brain-node">
+          <circle cx="270" cy="380" r="48"/>
+          <text x="270" y="385">Programming</text>
+        </g>
+
+        <g class="brain-node">
+          <circle cx="730" cy="380" r="48"/>
+          <text x="730" y="385">Projects</text>
+        </g>
+      </svg>
+    </section>
+
+    <section id="knowledge" class="panel-grid">
+      <article class="panel">
+        <h2>Start Here</h2>
+        <p>Write anything into <code>inbox.md</code>. Let the agent process it into the correct knowledge page.</p>
+      </article>
+
+      <article class="panel">
+        <h2>Knowledge</h2>
+        <p>Pages will appear here as the knowledge base grows.</p>
+      </article>
+
+      <article class="panel">
+        <h2>GitHub</h2>
+        <p>Use Git to keep a complete history of the brain.</p>
+      </article>
+    </section>
+  </main>
+</body>
+</html>
