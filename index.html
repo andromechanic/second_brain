@@ -85,6 +85,17 @@
           summary: "Frank Rosenblatt (1958) model introducing learnable weights, threshold-absorbing bias (w0 = -θ), and linear decision boundaries.",
           tags: ["ai", "neural-networks", "perceptron", "learning", "linear-separability"],
           radius: 54
+        },
+        {
+          id: "concept-perceptron-learning-algorithm",
+          title: "Perceptron Learning Algorithm",
+          path: "pages/ai/perceptron-learning-algorithm.html",
+          type: "concept",
+          category: "AI • Algorithms",
+          color: "#56d364",
+          summary: "Iterative weight update rule: w = w + x for positive mistakes, w = w - x for negative mistakes, with guaranteed finite convergence on linearly separable data.",
+          tags: ["ai", "neural-networks", "perceptron", "learning-algorithm", "convergence"],
+          radius: 56
         }
       ],
       edges: [
@@ -93,6 +104,12 @@
           target: "concept-perceptron",
           relation: "extends",
           color: "rgba(139, 124, 255, 0.45)"
+        },
+        {
+          source: "concept-perceptron",
+          target: "concept-perceptron-learning-algorithm",
+          relation: "extends",
+          color: "rgba(86, 211, 100, 0.45)"
         }
       ]
     };

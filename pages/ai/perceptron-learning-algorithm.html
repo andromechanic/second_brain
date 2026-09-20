@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="knowledge-id" content="concept-perceptron-learning-algorithm">
+  <meta name="title" content="Perceptron Learning Algorithm">
+  <meta name="type" content="concept">
+  <meta name="parent" content="concept-perceptron">
+  <meta name="tags" content="ai,neural-networks,perceptron,learning-algorithm,optimization,convergence">
+  <title>Perceptron Learning Algorithm — Akhil's Digital Brain</title>
+  <link rel="stylesheet" href="../../css/style.css">
+</head>
+<body>
+  <main class="site">
+    <header class="site-header">
+      <p><a href="../../index.html">← Digital Brain</a> &bull; <a href="perceptron.html">← The Perceptron</a></p>
+      <h1 class="site-title">Perceptron Learning Algorithm</h1>
+      <p class="site-subtitle">How a perceptron iteratively adjusts its synaptic weights using prediction errors.</p>
+      <div class="tags-bar">
+        <span class="tag-pill">ai</span>
+        <span class="tag-pill">neural-networks</span>
+        <span class="tag-pill">perceptron</span>
+        <span class="tag-pill">learning-algorithm</span>
+        <span class="tag-pill">convergence</span>
+      </div>
+    </header>
+
+    <!-- Section 1: The Core Goal -->
+    <section class="note-definition">
+      <strong>1. The Objective of Perceptron Learning</strong>
+      <p>Rather than manually tuning weights and thresholds, the Perceptron Learning Algorithm automatically discovers weights <strong>w</strong> = (<em>w</em>₀, <em>w</em>₁, ..., <em>w<sub>n</sub></em>) that classify every training instance correctly, achieving <strong>zero training errors</strong> on linearly separable datasets.</p>
+      <div class="math-display">
+        <strong>Prediction &amp; Decision:</strong> &nbsp; <em>ŷ</em> = 1 &nbsp; if &nbsp; <strong>w</strong><sup><em>T</em></sup><strong>x</strong> &ge; 0 &emsp;|&emsp; <em>ŷ</em> = 0 &nbsp; if &nbsp; <strong>w</strong><sup><em>T</em></sup><strong>x</strong> &lt; 0
+      </div>
+    </section>
+
+    <!-- Section 2: Error Analysis & Error Surface -->
+    <section class="panel">
+      <h2>2. Error Analysis &amp; The Error Surface</h2>
+      <p>Consider learning the <strong>OR gate</strong> with fixed bias weight <em>w</em>₀ = &minus;1. For each candidate pair of weights (<em>w</em>₁, <em>w</em>₂), we evaluate classification errors across all 4 points:</p>
+      <div class="note-example">
+        <strong>Testing Bad Weights (<em>w</em>₁ = &minus;1, <em>w</em>₂ = &minus;1):</strong><br>
+        Equation: <code>z = -1 - x₁ - x₂</code><br>
+        - Point (0, 0) &rarr; z = -1 &lt; 0 &rarr; ŷ = 0 (Desired 0) &rarr; ✅ Correct<br>
+        - Point (0, 1) &rarr; z = -2 &lt; 0 &rarr; ŷ = 0 (Desired 1) &rarr; ❌ Error<br>
+        - Point (1, 0) &rarr; z = -2 &lt; 0 &rarr; ŷ = 0 (Desired 1) &rarr; ❌ Error<br>
+        - Point (1, 1) &rarr; z = -3 &lt; 0 &rarr; ŷ = 0 (Desired 1) &rarr; ❌ Error<br>
+        <strong>Total Errors = 3.</strong> The decision boundary <code>x₁ + x₂ = -1</code> lies on the wrong side of data.
+      </div>
+      <p>Testing <strong><em>w</em>₁ = 1, <em>w</em>₂ = 1</strong> yields <code>z = -1 + x₁ + x₂</code>, producing <strong>0 errors</strong>.</p>
+
+      <h3>What is the Error Surface?</h3>
+      <p>The <strong>error surface</strong> represents the total count of misclassified samples plotted as a function of the weight vector <strong>w</strong>. The learning algorithm searches this discrete landscape to find a point where <strong>Total Errors = 0</strong>.</p>
+    </section>
+
+    <!-- Section 3: Training Sets P and N -->
+    <section class="panel">
+      <h2>3. Partitioning: Positive (P) and Negative (N) Classes</h2>
+      <p>Training instances are categorized by their ground truth labels:</p>
+      <ul>
+        <li><strong>Positive Class (<em>P</em>):</strong> Instances where desired output <em>y</em> = 1. (e.g., OR: (0,1), (1,0), (1,1))</li>
+        <li><strong>Negative Class (<em>N</em>):</strong> Instances where desired output <em>y</em> = 0. (e.g., OR: (0,0))</li>
+      </ul>
+    </section>
+
+    <!-- Section 4: The Weight Update Rule -->
+    <section class="panel">
+      <h2>4. The Perceptron Weight Update Rules</h2>
+      <p>When an instance <strong>x</strong> is misclassified, weights are updated immediately based on the nature of the error:</p>
+
+      <div class="note-important">
+        <strong>Case 1 &mdash; Positive Mistake (x &isin; P, but ŷ = 0):</strong><br>
+        The weighted sum is too small (<em>w<sup>T</sup>x</em> &lt; 0 when it should be &ge; 0). Push the weights in the direction of <em>x</em> to increase future output:
+        <div class="math-display">
+          <strong>w</strong> &larr; <strong>w</strong> + <strong>x</strong> &emsp;<em>(or <strong>w</strong> + &eta;<strong>x</strong>)</em>
+        </div>
+      </div>
+
+      <div class="note-warning">
+        <strong>Case 2 &mdash; Negative Mistake (x &isin; N, but ŷ = 1):</strong><br>
+        The weighted sum is too large (<em>w<sup>T</sup>x</em> &ge; 0 when it should be &lt; 0). Push weights away from <em>x</em> to decrease future output:
+        <div class="math-display">
+          <strong>w</strong> &larr; <strong>w</strong> &minus; <strong>x</strong> &emsp;<em>(or <strong>w</strong> &minus; &eta;<strong>x</strong>)</em>
+        </div>
+      </div>
+
+      <div class="note-takeaway">
+        <strong>Case 3 &mdash; Correct Classification:</strong><br>
+        No update. <strong>w</strong> remains unchanged.
+      </div>
+    </section>
+
+    <!-- Section 5: Step-by-Step Algorithm & Convergence -->
+    <section class="panel">
+      <h2>5. Algorithm Workflow &amp; Convergence</h2>
+      <pre><code>Initialize weights w randomly (or w = 0)
+Loop until 0 errors across entire training set:
+  For each training example (x, y):
+    Calculate z = w^T x
+    Predict y_hat = 1 if z >= 0 else 0
+    
+    If y_hat != y:
+      If y == 1:
+        w = w + η * x   (Increase activation)
+      Else:
+        w = w - η * x   (Decrease activation)</code></pre>
+
+      <h3>The Perceptron Convergence Theorem</h3>
+      <p>If the training data is <strong>linearly separable</strong>, the Perceptron Learning Algorithm is mathematically guaranteed to <strong>converge in a finite number of steps</strong> to a separating hyperplane.</p>
+      <p>If the data is <strong>not linearly separable</strong> (such as XOR), the algorithm will never converge, continuing to oscillate indefinitely.</p>
+    </section>
+
+    <!-- Section 6: Python Simulation -->
+    <section class="panel">
+      <h2>6. Python Reference Implementation</h2>
+      <pre><code>import numpy as np
+
+# OR Gate dataset: [x0=1, x1, x2]
+X = np.array([
+    [1, 0, 0],
+    [1, 0, 1],
+    [1, 1, 0],
+    [1, 1, 1]
+])
+y = np.array([0, 1, 1, 1])
+
+# Initialize weights to 0
+w = np.zeros(3)
+
+# Training loop
+for epoch in range(1, 11):
+    errors = 0
+    for x_i, target in zip(X, y):
+        z = np.dot(w, x_i)
+        pred = 1 if z >= 0 else 0
+        
+        if pred != target:
+            if target == 1:
+                w += x_i  # Positive mistake -> add input
+            else:
+                w -= x_i  # Negative mistake -> subtract input
+            errors += 1
+            
+    print(f"Epoch {epoch}: w = {w}, errors = {errors}")
+    if errors == 0:
+        print("Converged successfully!")
+        break</code></pre>
+    </section>
+
+    <!-- Section 7: Final Mental Model -->
+    <section class="note-takeaway">
+      <h2>🧠 Exam Cheat Sheet</h2>
+      <pre><code>Make Prediction
+      ↓
+Find Mistake?
+   ↙      ↘
+  NO      YES
+  ↓        ↓
+Keep w    Positive mistake (y=1, ŷ=0) &rarr; w = w + x
+          Negative mistake (y=0, ŷ=1) &rarr; w = w - x
+      ↓
+Repeat until 0 errors (Finite Convergence on Linearly Separable Data)</code></pre>
+    </section>
+  </main>
+</body>
+</html>
