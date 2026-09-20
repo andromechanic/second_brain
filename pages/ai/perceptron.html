@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="knowledge-id" content="concept-perceptron">
+  <meta name="title" content="The Perceptron">
+  <meta name="type" content="concept">
+  <meta name="parent" content="concept-mcculloch-pitts-neuron">
+  <meta name="tags" content="ai,neural-networks,perceptron,learning,linear-separability">
+  <title>The Perceptron — Akhil's Digital Brain</title>
+  <link rel="stylesheet" href="../../css/style.css">
+</head>
+<body>
+  <main class="site">
+    <header class="site-header">
+      <p><a href="../../index.html">← Digital Brain</a> &bull; <a href="mcculloch-pitts-neuron.html">← McCulloch–Pitts Neuron</a></p>
+      <h1 class="site-title">The Perceptron</h1>
+      <p class="site-subtitle">The foundational model introducing learnable weights, continuous inputs, and linear decision boundaries.</p>
+      <div class="tags-bar">
+        <span class="tag-pill">ai</span>
+        <span class="tag-pill">neural-networks</span>
+        <span class="tag-pill">perceptron</span>
+        <span class="tag-pill">linear-separability</span>
+        <span class="tag-pill">foundations</span>
+      </div>
+    </header>
+
+    <!-- Section 1: Evolution from M-P -->
+    <section class="note-definition">
+      <strong>1. What Changed from McCulloch–Pitts to the Perceptron?</strong>
+      <p>Invented by Frank Rosenblatt (1958), the Perceptron marks the transition from hand-crafted logical switches to genuine Machine Learning. While the M-P neuron used fixed binary inputs and pre-set connections, the Perceptron introduces numerical inputs, synaptic <strong>weights</strong>, and an algorithm to <strong>learn</strong> those weights from data.</p>
+    </section>
+
+    <!-- Section 2: Why Weights & Formula -->
+    <section class="panel">
+      <h2>2. Why Numerical Weights?</h2>
+      <p>In biological and artificial systems, different inputs carry unequal importance. Synaptic weights (<em>w<sub>i</sub></em>) quantify influence:</p>
+      <div class="math-display">
+        <strong>Weighted Sum:</strong> &sum; <em>w<sub>i</sub> x<sub>i</sub></em> = <em>w</em>₁<em>x</em>₁ + <em>w</em>₂<em>x</em>₂ + ... + <em>w<sub>n</sub>x<sub>n</sub></em>
+      </div>
+      <div class="note-example">
+        <strong>Real-Life Analogy (Scholarship Score):</strong><br>
+        <code>Score = 0.7(Marks) + 0.2(Attendance) + 0.1(Sports)</code><br>
+        The coefficients 0.7, 0.2, and 0.1 are weights determining the relative priority of each feature.
+      </div>
+    </section>
+
+    <!-- Section 3: Threshold and the Bias Trick -->
+    <section class="panel">
+      <h2>3. Thresholding &amp; The Bias Trick (x₀ = 1, w₀ = -&theta;)</h2>
+      <p>The standard perceptron fires if the weighted sum meets or exceeds threshold &theta;:</p>
+      <div class="math-display">
+        <em>y</em> = 1 &nbsp; if &nbsp; &sum;<sub><em>i</em>=1</sub><sup><em>n</em></sup> <em>w<sub>i</sub> x<sub>i</sub></em> &ge; &theta; &emsp;|&emsp; <em>y</em> = 0 &nbsp; if &nbsp; &sum;<sub><em>i</em>=1</sub><sup><em>n</em></sup> <em>w<sub>i</sub> x<sub>i</sub></em> &lt; &theta;
+      </div>
+      <p>Rearranging by subtracting &theta; from both sides gives:</p>
+      <div class="math-display">
+        &sum;<sub><em>i</em>=1</sub><sup><em>n</em></sup> <em>w<sub>i</sub> x<sub>i</sub></em> &minus; &theta; &ge; 0
+      </div>
+
+      <div class="note-important">
+        <strong>The Notation Trick (Absorbing the Threshold):</strong><br>
+        We define a dummy bias input <strong><em>x</em>₀ = 1</strong> and a bias weight <strong><em>w</em>₀ = &minus;&theta;</strong>.<br>
+        Then <code>w₀ x₀ = (-&theta;)(1) = -&theta;</code>, allowing us to absorb the threshold directly into the summation:
+        <div class="math-display">
+          &sum;<sub><em>i</em>=1</sub><sup><em>n</em></sup> <em>w<sub>i</sub>x<sub>i</sub></em> &minus; &theta; &emsp;&longrightarrow;&emsp; <strong>&sum;<sub><em>i</em>=0</sub><sup><em>n</em></sup> <em>w<sub>i</sub>x<sub>i</sub></em></strong>
+        </div>
+      </div>
+
+      <p>In modern machine learning notation, this is commonly written with bias <em>b</em>:</p>
+      <div class="math-display">
+        <em>z</em> = &sum; <em>w<sub>i</sub> x<sub>i</sub></em> + <em>b</em> &emsp;&longrightarrow;&emsp; <strong><em>y</em> = step(<em>z</em>)</strong>
+      </div>
+    </section>
+
+    <!-- Section 4: Linear Separability & XOR Limitation -->
+    <section class="panel">
+      <h2>4. Linear Separability &amp; The XOR Limitation</h2>
+      <p>What functions can a single perceptron compute? <strong>Only linearly separable functions.</strong></p>
+      <p>The decision boundary between class 1 and class 0 is defined where:</p>
+      <div class="math-display">
+        <em>w</em>₁<em>x</em>₁ + <em>w</em>₂<em>x</em>₂ + <em>b</em> = 0 &emsp;<em>(A straight line in 2D / hyperplane in nD)</em>
+      </div>
+
+      <div class="note-warning">
+        <strong>The Famous Limitation: XOR Cannot be Solved by a Single Perceptron:</strong><br>
+        While <strong>AND</strong>, <strong>OR</strong>, and <strong>NOT</strong> are linearly separable (a single straight line can partition output 1 from 0), the <strong>XOR</strong> truth table places points diagonally. No single straight line can separate them. This historical insight (Minsky &amp; Papert, 1969) motivated the later evolution toward multi-layer neural networks.
+      </div>
+    </section>
+
+    <!-- Section 5: Comparison Table -->
+    <section class="panel">
+      <h2>5. McCulloch–Pitts vs. Perceptron</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Feature</th>
+            <th>McCulloch–Pitts (1943)</th>
+            <th>Perceptron (1958)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Inputs</strong></td>
+            <td>Binary only {0, 1}</td>
+            <td>Continuous numerical values &reals;</td>
+          </tr>
+          <tr>
+            <td><strong>Synaptic Weights</strong></td>
+            <td>None (fixed +1 or veto)</td>
+            <td>Arbitrary numerical weights (<em>w<sub>i</sub></em>)</td>
+          </tr>
+          <tr>
+            <td><strong>Learning Ability</strong></td>
+            <td>❌ Hand-designed</td>
+            <td>✅ Learned via Perceptron Learning Rule</td>
+          </tr>
+          <tr>
+            <td><strong>Threshold</strong></td>
+            <td>Fixed integer &theta;</td>
+            <td>Absorbed into bias weight (<em>w</em>₀ = &minus;&theta;)</td>
+          </tr>
+          <tr>
+            <td><strong>Decision Boundary</strong></td>
+            <td>Discrete logic constraints</td>
+            <td>Linear hyperplane (&sum; <em>w<sub>i</sub>x<sub>i</sub></em> + <em>b</em> = 0)</td>
+          </tr>
+          <tr>
+            <td><strong>Can Solve XOR?</strong></td>
+            <td>❌ No (single unit)</td>
+            <td>❌ No (requires multi-layer)</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- Section 6: Learning Rule & Python -->
+    <section class="panel">
+      <h2>6. Perceptron Learning Algorithm &amp; Python Simulation</h2>
+      <p>Weights are adjusted iteratively when predictions mismatch ground truth:</p>
+      <div class="math-display">
+        <strong>Weight Update Rule:</strong> <em>w<sub>i</sub></em><sup>new</sup> = <em>w<sub>i</sub></em><sup>old</sup> + &eta;(<em>y</em> &minus; <em>ŷ</em>)<em>x<sub>i</sub></em>
+      </div>
+      <p>where &eta; is the learning rate, <em>y</em> is ground truth, and <em>ŷ</em> is the prediction.</p>
+
+      <pre><code>def perceptron(x1, x2, w1, w2, b):
+    """Simple 2-input perceptron with step activation."""
+    z = w1 * x1 + w2 * x2 + b
+    return 1 if z >= 0 else 0
+
+# Linearly separable AND gate configuration
+w1, w2, b = 1, 1, -2
+
+print("AND(0, 0) ->", perceptron(0, 0, w1, w2, b))  # 0
+print("AND(0, 1) ->", perceptron(0, 1, w1, w2, b))  # 0
+print("AND(1, 0) ->", perceptron(1, 0, w1, w2, b))  # 0
+print("AND(1, 1) ->", perceptron(1, 1, w1, w2, b))  # 1</code></pre>
+    </section>
+
+    <!-- Section 7: Key Mental Chain -->
+    <section class="note-takeaway">
+      <h2>🧠 Core Mental Chain</h2>
+      <pre><code>McCulloch-Pitts (Fixed logic)
+        ↓
+Perceptron (Numerical weights + Learning)
+        ↓
+Weighted Sum: z = ∑ wᵢ xᵢ + b
+        ↓
+Decision: y = step(z)
+        ↓
+Solves: Linearly Separable Functions (AND, OR, NOT)
+Fails: Non-linear Boundaries (XOR) → Requires Multi-Layer Networks</code></pre>
+    </section>
+  </main>
+</body>
+</html>

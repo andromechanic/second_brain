@@ -70,13 +70,31 @@
           path: "pages/ai/mcculloch-pitts-neuron.html",
           type: "concept",
           category: "AI • Foundations",
-          color: "#8b7cff",
+          color: "#5ee7ff",
           summary: "The earliest mathematical model of an artificial neuron (1943): binary inputs, threshold θ, excitatory inputs, and absolute inhibitory priority.",
           tags: ["ai", "neural-networks", "history", "logic-gates", "foundations"],
+          radius: 52
+        },
+        {
+          id: "concept-perceptron",
+          title: "The Perceptron",
+          path: "pages/ai/perceptron.html",
+          type: "concept",
+          category: "AI • Models",
+          color: "#8b7cff",
+          summary: "Frank Rosenblatt (1958) model introducing learnable weights, threshold-absorbing bias (w0 = -θ), and linear decision boundaries.",
+          tags: ["ai", "neural-networks", "perceptron", "learning", "linear-separability"],
           radius: 54
         }
       ],
-      edges: []
+      edges: [
+        {
+          source: "concept-mcculloch-pitts-neuron",
+          target: "concept-perceptron",
+          relation: "extends",
+          color: "rgba(139, 124, 255, 0.45)"
+        }
+      ]
     };
 
     // Canvas & Viewport Setup
