@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="knowledge-id" content="concept-mlp-boolean-representation">
+  <meta name="title" content="Multilayer Perceptrons &amp; Boolean Representation">
+  <meta name="type" content="concept">
+  <meta name="parent" content="concept-perceptron">
+  <meta name="tags" content="ai,neural-networks,mlp,boolean-functions,xor,intermediate-representations">
+  <title>Multilayer Perceptrons &amp; Boolean Representation — Akhil's Digital Brain</title>
+  <link rel="stylesheet" href="../../css/style.css">
+</head>
+<body>
+  <main class="site">
+    <header class="site-header">
+      <p><a href="../../index.html">← Digital Brain</a> &bull; <a href="perceptron.html">← The Perceptron</a></p>
+      <h1 class="site-title">Multilayer Perceptrons &amp; Boolean Representation</h1>
+      <p class="site-subtitle">How adding a single hidden layer overcomes linear separability constraints to represent any Boolean function.</p>
+      <div class="tags-bar">
+        <span class="tag-pill">ai</span>
+        <span class="tag-pill">neural-networks</span>
+        <span class="tag-pill">mlp</span>
+        <span class="tag-pill">boolean-logic</span>
+        <span class="tag-pill">foundations</span>
+      </div>
+    </header>
+
+    <!-- Section 1: The Core Breakthrough -->
+    <section class="note-definition">
+      <strong>1. The Architectural Leap: Hidden Layers</strong>
+      <p>A single perceptron is constrained to linear decision boundaries, famously rendering non-linearly separable functions like <strong>XOR</strong> impossible to compute. Introducing an intermediate <strong>hidden layer</strong> transforms the architecture into a <strong>Multilayer Perceptron (MLP)</strong>, providing the expressive power to compute arbitrary Boolean functions.</p>
+      <div class="math-display">
+        <strong>Input Layer</strong> &rarr; <strong>Hidden Layer (Pattern Detectors)</strong> &rarr; <strong>Output Layer (Function Selector)</strong>
+      </div>
+    </section>
+
+    <!-- Section 2: Input Space & Hidden Layer Detectors -->
+    <section class="panel">
+      <h2>2. The Pattern Detector Mechanism</h2>
+      <p>Consider two bipolar Boolean inputs <em>x</em>₁, <em>x</em>₂ &isin; {&minus;1, +1}. There are exactly 2² = 4 distinct input configurations:</p>
+      <table>
+        <thead>
+          <tr>
+            <th>Pattern</th>
+            <th>x₁</th>
+            <th>x₂</th>
+            <th>Target Detector</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>Pattern 1</td><td>+1</td><td>+1</td><td><em>h</em>₁: fires only for (+1, +1)</td></tr>
+          <tr><td>Pattern 2</td><td>+1</td><td>&minus;1</td><td><em>h</em>₂: fires only for (+1, &minus;1)</td></tr>
+          <tr><td>Pattern 3</td><td>&minus;1</td><td>+1</td><td><em>h</em>₃: fires only for (&minus;1, +1)</td></tr>
+          <tr><td>Pattern 4</td><td>&minus;1</td><td>&minus;1</td><td><em>h</em>₄: fires only for (&minus;1, &minus;1)</td></tr>
+        </tbody>
+      </table>
+
+      <p>Each hidden neuron uses a bias weight <em>w</em>₀ = &minus;2 and input weights matching its target pattern signs, firing (+1) if and only if:</p>
+      <div class="math-display">
+        <em>w</em>₁<em>x</em>₁ + <em>w</em>₂<em>x</em>₂ &ge; 2 &emsp;&equiv;&emsp; <strong>step(&minus;2 + <em>w</em>₁<em>x</em>₁ + <em>w</em>₂<em>x</em>₂) = +1</strong>
+      </div>
+
+      <div class="note-example">
+        <strong>Verifying Detector <em>h</em>₁ (w₁ = +1, w₂ = +1):</strong><br>
+        - Input (+1, +1): &minus;2 + 1(1) + 1(1) = 0 &ge; 0 &rarr; <strong>fires (+1)</strong><br>
+        - Input (+1, &minus;1): &minus;2 + 1(1) + 1(&minus;1) = &minus;2 &lt; 0 &rarr; <strong>inactive (&minus;1)</strong><br>
+        - Input (&minus;1, +1): &minus;2 + 1(&minus;1) + 1(1) = &minus;2 &lt; 0 &rarr; <strong>inactive (&minus;1)</strong><br>
+        - Input (&minus;1, &minus;1): &minus;2 + 1(&minus;1) + 1(&minus;1) = &minus;4 &lt; 0 &rarr; <strong>inactive (&minus;1)</strong>
+      </div>
+    </section>
+
+    <!-- Section 3: Intermediate Representation Matrix -->
+    <section class="panel">
+      <h2>3. The Intermediate Representation Space</h2>
+      <p>Evaluating all 4 hidden units across the input space reveals a fundamental property:</p>
+      <table>
+        <thead>
+          <tr>
+            <th>Input (x₁, x₂)</th>
+            <th>h₁ (+1, +1)</th>
+            <th>h₂ (+1, &minus;1)</th>
+            <th>h₃ (&minus;1, +1)</th>
+            <th>h₄ (&minus;1, &minus;1)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>(+1, +1)</td><td><strong>+1</strong></td><td>&minus;1</td><td>&minus;1</td><td>&minus;1</td></tr>
+          <tr><td>(+1, &minus;1)</td><td>&minus;1</td><td><strong>+1</strong></td><td>&minus;1</td><td>&minus;1</td></tr>
+          <tr><td>(&minus;1, +1)</td><td>&minus;1</td><td>&minus;1</td><td><strong>+1</strong></td><td>&minus;1</td></tr>
+          <tr><td>(&minus;1, &minus;1)</td><td>&minus;1</td><td>&minus;1</td><td>&minus;1</td><td><strong>+1</strong></td></tr>
+        </tbody>
+      </table>
+      <div class="note-important">
+        <strong>The Transformation:</strong> For any valid input, exactly one hidden unit activates (+1) while all others stay inactive (&minus;1). The hidden layer transforms the original coordinate space into an explicit pattern index.
+      </div>
+    </section>
+
+    <!-- Section 4: Solving XOR -->
+    <section class="panel">
+      <h2>4. Complete Construction for XOR</h2>
+      <p>The output perceptron takes (<em>h</em>₁, <em>h</em>₂, <em>h</em>₃, <em>h</em>₄) as inputs. To implement XOR (where (+1, &minus;1) and (&minus;1, +1) output +1, while (+1, +1) and (&minus;1, &minus;1) output &minus;1):</p>
+      <div class="math-display">
+        <strong>Output Weights:</strong> <em>w</em>₁ = &minus;1, &nbsp; <em>w</em>₂ = +1, &nbsp; <em>w</em>₃ = +1, &nbsp; <em>w</em>₄ = &minus;1, &nbsp; <em>w</em>₀ = 0
+      </div>
+
+      <pre><code>y = step(-h₁ + h₂ + h₃ - h₄)
+
+Test Cases:
+• (+1, +1) &rarr; (-1)(+1) + (1)(-1) + (1)(-1) + (-1)(-1) = -2 &lt; 0 &rarr; y = -1 (False)
+• (+1, -1) &rarr; (-1)(-1) + (1)(+1) + (1)(-1) + (-1)(-1) = +2 &ge; 0 &rarr; y = +1 (True)
+• (-1, +1) &rarr; (-1)(-1) + (1)(-1) + (1)(+1) + (-1)(-1) = +2 &ge; 0 &rarr; y = +1 (True)
+• (-1, -1) &rarr; (-1)(-1) + (1)(-1) + (1)(-1) + (-1)(+1) = -2 &lt; 0 &rarr; y = -1 (False)</code></pre>
+      <p>The network computes the XOR function precisely.</p>
+    </section>
+
+    <!-- Section 5: Universal Boolean Theorem -->
+    <section class="note-important">
+      <h2>5. General Representation Theorem for Boolean Functions</h2>
+      <p>For any <em>n</em>-variable Boolean input, there are 2<sup><em>n</em></sup> possible input vectors:</p>
+      <ol>
+        <li>Construct <strong>2<sup><em>n</em></sup> hidden units</strong>, each matching one row of the truth table.</li>
+        <li>Set the output weight for detector <em>h<sub>k</sub></em> to <strong>+1</strong> if row <em>k</em> requires a True output, or <strong>&minus;1</strong> if it requires False.</li>
+      </ol>
+      <div class="math-display">
+        <strong>Theorem:</strong> An MLP with a single hidden layer containing 2<sup><em>n</em></sup> units can represent <strong>any Boolean function</strong> of <em>n</em> variables.
+      </div>
+    </section>
+
+    <!-- Section 6: Key Conceptual Takeaway -->
+    <section class="note-takeaway">
+      <h2>🧠 Core Architectural Principle</h2>
+      <p>The power of multilayer neural networks originates from <strong>intermediate representation learning</strong>:</p>
+      <pre><code>Input Layer (Raw Inputs)
+         ↓  [Layer 1 Weights]
+Hidden Layer (Pattern Detectors / Feature Extractors)
+         ↓  [Layer 2 Weights]
+Output Layer (Function Selector / Decision Surface)</code></pre>
+      <p>By recasting non-linearly separable inputs into an intermediate feature space, linear readout units can solve arbitrarily complex decision tasks.</p>
+    </section>
+  </main>
+</body>
+</html>
