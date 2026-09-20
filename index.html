@@ -43,8 +43,10 @@
         </g>
 
         <g class="brain-node">
-          <circle cx="270" cy="140" r="48"/>
-          <text x="270" y="145">AI</text>
+          <a href="pages/ai/mcculloch-pitts-neuron.html">
+            <circle cx="270" cy="140" r="48"/>
+            <text x="270" y="145">AI</text>
+          </a>
         </g>
 
         <g class="brain-node">
@@ -66,18 +68,21 @@
 
     <section id="knowledge" class="panel-grid">
       <article class="panel">
-        <h2>Start Here</h2>
-        <p>Write anything into <code>inbox.md</code>. Let the agent process it into the correct knowledge page.</p>
+        <span class="tag-pill">Guide</span>
+        <h2><a href="pages/start-here.html">Start Here</a></h2>
+        <p>Write anything into <code>inbox.md</code>. The agent processes notes into connected HTML knowledge pages.</p>
       </article>
 
       <article class="panel">
-        <h2>Knowledge</h2>
-        <p>Pages will appear here as the knowledge base grows.</p>
+        <span class="tag-pill">AI &bull; Foundations</span>
+        <h2><a href="pages/ai/mcculloch-pitts-neuron.html">McCulloch–Pitts Neuron</a></h2>
+        <p>The 1943 threshold neuron: binary inputs, threshold &theta;, excitatory vs. inhibitory priority, and logic gates.</p>
       </article>
 
       <article class="panel">
-        <h2>GitHub</h2>
-        <p>Use Git to keep a complete history of the brain.</p>
+        <span class="tag-pill">System</span>
+        <h2>GitHub Backup</h2>
+        <p>Git and SQLite preserve knowledge history and fast relational graph mapping.</p>
       </article>
     </section>
   </main>

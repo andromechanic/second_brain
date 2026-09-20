@@ -1,0 +1,308 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="knowledge-id" content="concept-mcculloch-pitts-neuron">
+  <meta name="title" content="McCulloch–Pitts Neuron">
+  <meta name="type" content="concept">
+  <meta name="parent" content="topic-ai">
+  <meta name="tags" content="ai,neural-networks,history,logic-gates,foundations">
+  <title>McCulloch–Pitts Neuron — Akhil's Digital Brain</title>
+  <link rel="stylesheet" href="../../css/style.css">
+</head>
+<body>
+  <main class="site">
+    <header class="site-header">
+      <p><a href="../../index.html">← Digital Brain</a></p>
+      <h1 class="site-title">McCulloch–Pitts (M-P) Neuron</h1>
+      <p class="site-subtitle">The earliest mathematical model of an artificial neuron (1943).</p>
+      <div class="tags-bar">
+        <span class="tag-pill">ai</span>
+        <span class="tag-pill">neural-networks</span>
+        <span class="tag-pill">history</span>
+        <span class="tag-pill">logic-gates</span>
+        <span class="tag-pill">foundations</span>
+      </div>
+    </header>
+
+    <!-- Section 1: Definition -->
+    <section class="note-definition">
+      <strong>1. What is a McCulloch–Pitts Unit?</strong>
+      <p>Proposed by Warren McCulloch and Walter Pitts in 1943, the M-P neuron is one of the foundational mathematical abstractions of biological neurons. It behaves as a binary threshold decision unit:</p>
+      <div class="math-display">
+        <strong>Inputs</strong> &rarr; <strong>Neuron</strong> &rarr; <strong>Output</strong>
+      </div>
+      <p>The output is strictly binary:</p>
+      <div class="math-display">
+        <em>y</em> &isin; {0, 1}
+      </div>
+      <ul>
+        <li><strong>0</strong>: Neuron does not fire (inactive)</li>
+        <li><strong>1</strong>: Neuron fires (active)</li>
+      </ul>
+    </section>
+
+    <!-- Section 2 & 3: Structure & Threshold -->
+    <section class="panel">
+      <h2>2. Basic Structure &amp; The Threshold (&theta;)</h2>
+      <p>A typical M-P neuron receives multiple binary inputs <em>x<sub>i</sub></em> &isin; {0, 1}:</p>
+      <pre><code>x₁ ───────►
+           \
+x₂ ────────►  ● ─────► y
+           /   Neuron
+x₃ ───────►</code></pre>
+      <p>The symbol <strong>&theta; (theta)</strong> is the <strong>threshold</strong>: the minimum quantity of excitation needed for the neuron to fire.</p>
+      <div class="note-example">
+        <strong>Threshold Example (&theta; = 2):</strong><br>
+        Suppose inputs are: <code>x₁ = 1, x₂ = 1, x₃ = 0</code><br>
+        Total excitation = 1 + 1 + 0 = <strong>2</strong>.<br>
+        Since 2 &ge; &theta; (2 &ge; 2), the neuron fires: <code>y = 1</code>.<br><br>
+        If inputs were <code>x₁ = 1, x₂ = 0, x₃ = 0</code> &rarr; sum is 1 &lt; 2 &rarr; <code>y = 0</code>.
+      </div>
+    </section>
+
+    <!-- Section 4 & 5: Two Types of Inputs & Decision Rules -->
+    <section class="panel">
+      <h2>3. Excitatory vs. Inhibitory Inputs</h2>
+      <p>Connections in an M-P unit fall into two distinct functional types:</p>
+      <ul>
+        <li>
+          <strong>Excitatory input (<code>&rarr;</code>):</strong> Encourages firing. When active (<em>x<sub>i</sub> = 1</em>), it contributes +1 toward reaching threshold &theta;.
+        </li>
+        <li>
+          <strong>Inhibitory input (<code>&mdash;&cir;</code>):</strong> Exerts absolute veto power. Prevents firing completely.
+        </li>
+      </ul>
+
+      <div class="note-warning">
+        <strong>Rule 1 &mdash; Absolute Inhibitory Priority (Veto Rule):</strong><br>
+        If <strong>ANY</strong> inhibitory input is 1, the output is immediately <code>y = 0</code>, regardless of how large the excitatory sum is. No further calculation is needed.
+      </div>
+
+      <div class="note-important">
+        <strong>Rule 2 &mdash; Excitatory Threshold Check:</strong><br>
+        If (and only if) <em>all</em> inhibitory inputs are 0, evaluate:
+        <div class="math-display">
+          &sum; <em>x</em><sub>excitatory</sub> &ge; &theta; &implies; <strong>y = 1</strong> &emsp;|&emsp; otherwise <strong>y = 0</strong>
+        </div>
+      </div>
+
+      <h3>Decision Flowchart</h3>
+      <pre><code>        Any inhibitory input = 1?
+                 │
+          YES ───┴───► y = 0  (Veto triggered!)
+                 │
+                NO
+                 ↓
+    Sum of excitatory inputs ≥ θ ?
+                 │
+          YES ───┴───► y = 1  (Neuron fires)
+                 │
+                NO
+                 ↓
+                y = 0  (Sub-threshold)</code></pre>
+    </section>
+
+    <!-- Section 6-9: Logic Gate Implementations -->
+    <section class="panel">
+      <h2>4. Implementing Logic Gates with M-P Neurons</h2>
+
+      <!-- AND Gate -->
+      <h3>A. AND Gate (y = x₁ &and; x₂)</h3>
+      <p>Neuron fires <em>only when both inputs are 1</em>. Both inputs are excitatory; set threshold <strong>&theta; = 2</strong> (for <em>n</em> inputs, &theta; = <em>n</em>).</p>
+      <table>
+        <thead>
+          <tr>
+            <th>x₁</th>
+            <th>x₂</th>
+            <th>Sum (x₁ + x₂)</th>
+            <th>Sum &ge; 2?</th>
+            <th>AND Output (y)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>0</td><td>0</td><td>0</td><td>No</td><td>0</td></tr>
+          <tr><td>0</td><td>1</td><td>1</td><td>No</td><td>0</td></tr>
+          <tr><td>1</td><td>0</td><td>1</td><td>No</td><td>0</td></tr>
+          <tr><td>1</td><td>1</td><td>2</td><td>Yes</td><td><strong>1</strong></td></tr>
+        </tbody>
+      </table>
+
+      <!-- OR Gate -->
+      <h3>B. OR Gate (y = x₁ &or; x₂)</h3>
+      <p>Neuron fires if <em>at least one input is 1</em>. Both inputs are excitatory; set threshold <strong>&theta; = 1</strong>.</p>
+      <table>
+        <thead>
+          <tr>
+            <th>x₁</th>
+            <th>x₂</th>
+            <th>Sum (x₁ + x₂)</th>
+            <th>Sum &ge; 1?</th>
+            <th>OR Output (y)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>0</td><td>0</td><td>0</td><td>No</td><td>0</td></tr>
+          <tr><td>0</td><td>1</td><td>1</td><td>Yes</td><td><strong>1</strong></td></tr>
+          <tr><td>1</td><td>0</td><td>1</td><td>Yes</td><td><strong>1</strong></td></tr>
+          <tr><td>1</td><td>1</td><td>2</td><td>Yes</td><td><strong>1</strong></td></tr>
+        </tbody>
+      </table>
+
+      <!-- NOT Gate -->
+      <h3>C. NOT Gate (y = &not;x)</h3>
+      <p>Input <em>x</em> is connected as an <strong>inhibitory input</strong> (<code>x &mdash;&cir; &bull;</code>) with threshold <strong>&theta; = 1</strong> (no excitatory inputs needed).</p>
+      <table>
+        <thead>
+          <tr>
+            <th>x (Inhibitory)</th>
+            <th>Inhibition Active?</th>
+            <th>NOT Output (y)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>0</td><td>No &rarr; Uninhibited, fires</td><td><strong>1</strong></td></tr>
+          <tr><td>1</td><td>Yes &rarr; Veto triggered</td><td><strong>0</strong></td></tr>
+        </tbody>
+      </table>
+
+      <!-- NOR Gate -->
+      <h3>D. NOR Gate (y = &not;(x₁ &or; x₂))</h3>
+      <p>Neuron outputs 1 <em>only when both inputs are 0</em>. Connect both inputs as <strong>inhibitory</strong> inputs.</p>
+      <table>
+        <thead>
+          <tr>
+            <th>x₁ (Inhibitory)</th>
+            <th>x₂ (Inhibitory)</th>
+            <th>Any Inhibition Active?</th>
+            <th>NOR Output (y)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>0</td><td>0</td><td>None &rarr; fires</td><td><strong>1</strong></td></tr>
+          <tr><td>0</td><td>1</td><td>Yes (x₂) &rarr; veto</td><td><strong>0</strong></td></tr>
+          <tr><td>1</td><td>0</td><td>Yes (x₁) &rarr; veto</td><td><strong>0</strong></td></tr>
+          <tr><td>1</td><td>1</td><td>Yes (both) &rarr; veto</td><td><strong>0</strong></td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- Section 10: Exam Shortcut Table -->
+    <section class="note-important">
+      <h2>5. Exam Shortcut &amp; Recognition Table</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Logic Function</th>
+            <th>Input Types</th>
+            <th>Threshold (&theta;)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td><strong>AND</strong> (<em>n</em> inputs)</td><td>All excitatory</td><td>&theta; = <em>n</em></td></tr>
+          <tr><td><strong>OR</strong> (<em>n</em> inputs)</td><td>All excitatory</td><td>&theta; = 1</td></tr>
+          <tr><td><strong>NOT</strong> (1 input)</td><td>Single inhibitory input</td><td>&theta; = 1 (or 0 excitatory)</td></tr>
+          <tr><td><strong>NOR</strong> (2 inputs)</td><td>All inhibitory inputs</td><td>&theta; = 1 (or 0 excitatory)</td></tr>
+        </tbody>
+      </table>
+      <div class="note-takeaway">
+        <strong>The Golden Exam Rule:</strong> Always inspect inhibitory inputs first. If even <em>one</em> inhibitory input is 1, halt instantly and declare <strong>y = 0</strong>.
+      </div>
+    </section>
+
+    <!-- Section 11 & 12: Historical Significance & Comparison -->
+    <section class="panel">
+      <h2>6. Significance in AI &amp; Comparison to Modern Neurons</h2>
+      <p>The M-P neuron established the computational lineage of Artificial Intelligence:</p>
+      <div class="math-display">
+        <strong>M-P Neuron</strong> (1943) &rarr; <strong>Perceptron</strong> (1958) &rarr; <strong>Multilayer Perceptrons</strong> &rarr; <strong>Deep Learning</strong>
+      </div>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Property</th>
+            <th>McCulloch–Pitts (M-P) Unit</th>
+            <th>Modern Artificial Neuron</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Input Values</strong></td>
+            <td>Binary only: {0, 1}</td>
+            <td>Continuous real numbers: &reals;</td>
+          </tr>
+          <tr>
+            <td><strong>Synaptic Connections</strong></td>
+            <td>Fixed weights (+1 or &minus;&infin;)</td>
+            <td>Learnable continuous weights (<em>w<sub>i</sub></em>)</td>
+          </tr>
+          <tr>
+            <td><strong>Threshold / Bias</strong></td>
+            <td>Manually predetermined &theta;</td>
+            <td>Learned bias parameter (<em>b</em>)</td>
+          </tr>
+          <tr>
+            <td><strong>Output</strong></td>
+            <td>Binary discrete: {0, 1}</td>
+            <td>Continuous/probabilistic (ReLU, Sigmoid, Softmax)</td>
+          </tr>
+          <tr>
+            <td><strong>Learning Mechanism</strong></td>
+            <td>None (hand-designed)</td>
+            <td>Gradient Descent &amp; Backpropagation</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- Section 13: Python Implementation -->
+    <section class="panel">
+      <h2>7. Python Simulation</h2>
+      <p>A reference Python implementation demonstrating inhibitory veto and threshold checking:</p>
+      <pre><code>def mp_neuron(excitatory_inputs, inhibitory_inputs, threshold):
+    """
+    Simulate a McCulloch-Pitts neuron.
+    
+    Rule 1: Absolute inhibition priority (veto).
+    Rule 2: Excitatory sum >= threshold.
+    """
+    # Rule 1: Check inhibitory veto
+    if 1 in inhibitory_inputs:
+        return 0
+    
+    # Rule 2: Evaluate excitatory sum against threshold
+    return 1 if sum(excitatory_inputs) >= threshold else 0
+
+# Test Gates
+print("AND(1, 1):", mp_neuron([1, 1], [], 2))       # 1
+print("AND(1, 0):", mp_neuron([1, 0], [], 2))       # 0
+print("OR(1, 0): ", mp_neuron([1, 0], [], 1))       # 1
+print("NOT(0):   ", mp_neuron([], [0], 1))          # 1
+print("NOT(1):   ", mp_neuron([], [1], 1))          # 0
+print("NOR(0, 0):", mp_neuron([], [0, 0], 1))       # 1
+print("NOR(0, 1):", mp_neuron([], [0, 1], 1))       # 0</code></pre>
+    </section>
+
+    <!-- Section 14: Mental Model -->
+    <section class="note-takeaway">
+      <h2>🧠 Core Mental Model</h2>
+      <pre><code>                 INHIBITORY INPUT ACTIVE?
+                           │
+                     YES ──┴──►  OUTPUT = 0
+                           │
+                          NO
+                           ↓
+                  Add excitatory inputs
+                           │
+                           ↓
+                 Sum ≥ Threshold θ ?
+                      /          \
+                    YES           NO
+                     ↓             ↓
+                  OUTPUT 1      OUTPUT 0</code></pre>
+    </section>
+  </main>
+</body>
+</html>

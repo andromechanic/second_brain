@@ -15,4 +15,3 @@ Examples:
 - copied text
 
 When the agent processes the inbox successfully, this file should be cleared again.
-
