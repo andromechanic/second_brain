@@ -65,17 +65,6 @@
     const BRAIN_GRAPH = {
       nodes: [
         {
-          id: "concept-start-here",
-          title: "Start Here",
-          path: "pages/start-here.html",
-          type: "concept",
-          category: "Guide",
-          color: "#5ee7ff",
-          summary: "Introduction to Akhil's Digital Brain. How notes transform into structured knowledge.",
-          tags: ["meta", "start"],
-          radius: 46
-        },
-        {
           id: "concept-mcculloch-pitts-neuron",
           title: "McCulloch–Pitts Neuron",
           path: "pages/ai/mcculloch-pitts-neuron.html",
@@ -87,14 +76,7 @@
           radius: 54
         }
       ],
-      edges: [
-        {
-          source: "concept-start-here",
-          target: "concept-mcculloch-pitts-neuron",
-          relation: "references",
-          color: "rgba(94, 231, 255, 0.4)"
-        }
-      ]
+      edges: []
     };
 
     // Canvas & Viewport Setup
@@ -186,7 +168,9 @@
 
     // Stats Display
     if (graphStats) {
-      graphStats.textContent = `${nodes.length} Concepts • ${edges.length} Synapse`;
+      const cStr = `${nodes.length} Concept${nodes.length === 1 ? '' : 's'}`;
+      const eStr = edges.length > 0 ? ` • ${edges.length} Synapse${edges.length === 1 ? '' : 's'}` : '';
+      graphStats.textContent = cStr + eStr;
     }
 
     // Force-directed Physics Step
