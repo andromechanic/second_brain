@@ -21,6 +21,7 @@ Raw notes → understand → locate relevant page → edit HTML → update links
 12. Keep the repository portable and GitHub-friendly.
 13. Never commit API keys or secrets.
 14. Keep agent completion replies short and token-efficient. Do not restate or re-explain note contents.
+15. Write in an enduring, conceptual tone for general knowledge. Never frame notes as exam prep, study guides, or student cheat sheets (avoid "exam trick", "exam shortcut", "cheat sheet", etc.).
 
 ## NOTE WORKFLOW
 The user writes raw material into `inbox.md`.
