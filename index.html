@@ -4,87 +4,705 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="knowledge-id" content="brain-root">
-  <meta name="title" content="Akhil's Digital Brain">
+  <meta name="title" content="The Digital Brain">
   <meta name="type" content="root">
-  <meta name="tags" content="brain,index">
-  <title>Akhil's Digital Brain</title>
+  <meta name="tags" content="brain,index,graph">
+  <title>The Digital Brain</title>
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
   <main class="site">
-    <header class="site-header">
-      <h1 class="site-title">Akhil's Digital Brain</h1>
-      <p class="site-subtitle">A living map of knowledge, ideas and connections.</p>
+    <!-- Clean Minimalist Header -->
+    <header class="brain-header-bar">
+      <div class="brain-brand">
+        <h1 class="brain-heading">The Digital Brain</h1>
+        <span class="brain-badge" id="graphStats">2 Nodes</span>
+      </div>
+
+      <!-- Live Search Feature -->
+      <div class="search-wrapper">
+        <span class="search-icon">🔍</span>
+        <input type="search" id="brainSearch" class="search-input" placeholder="Search knowledge..." autocomplete="off" spellcheck="false">
+        <kbd class="search-kbd">/</kbd>
+        <div id="searchResults" class="search-dropdown"></div>
+      </div>
     </header>
 
-    <section class="brain-shell" aria-label="Digital Brain visualization">
-      <svg class="brain-canvas" viewBox="0 0 1000 520" role="img"
-           aria-label="Knowledge graph visualization">
-        <defs>
-          <filter id="glow">
-            <feGaussianBlur stdDeviation="4" result="blur"/>
-            <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
-          </filter>
-        </defs>
+    <!-- Heavy Graphical & Interactive Canvas Stage -->
+    <section class="graph-stage" id="graphContainer" aria-label="Interactive Digital Brain Knowledge Graph">
+      <canvas id="graphCanvas" class="graph-canvas"></canvas>
 
-        <g class="brain-edge" opacity=".8">
-          <line x1="500" y1="260" x2="270" y2="140"/>
-          <line x1="500" y1="260" x2="730" y2="140"/>
-          <line x1="500" y1="260" x2="270" y2="380"/>
-          <line x1="500" y1="260" x2="730" y2="380"/>
-        </g>
+      <!-- HUD Controls -->
+      <div class="graph-hud">
+        <button class="hud-btn" id="zoomInBtn" title="Zoom In">+</button>
+        <button class="hud-btn" id="zoomOutBtn" title="Zoom Out">&minus;</button>
+        <button class="hud-btn" id="resetViewBtn" title="Reset View" style="font-size: 0.85rem;">⟲</button>
+      </div>
 
-        <g class="brain-node" filter="url(#glow)">
-          <a href="#knowledge">
-            <circle cx="500" cy="260" r="70"/>
-            <text x="500" y="256">AKHIL'S</text>
-            <text x="500" y="276">BRAIN</text>
-          </a>
-        </g>
-
-        <g class="brain-node">
-          <a href="pages/ai/mcculloch-pitts-neuron.html">
-            <circle cx="270" cy="140" r="48"/>
-            <text x="270" y="145">AI</text>
-          </a>
-        </g>
-
-        <g class="brain-node">
-          <circle cx="730" cy="140" r="48"/>
-          <text x="730" y="145">Math</text>
-        </g>
-
-        <g class="brain-node">
-          <circle cx="270" cy="380" r="48"/>
-          <text x="270" y="385">Programming</text>
-        </g>
-
-        <g class="brain-node">
-          <circle cx="730" cy="380" r="48"/>
-          <text x="730" y="385">Projects</text>
-        </g>
-      </svg>
-    </section>
-
-    <section id="knowledge" class="panel-grid">
-      <article class="panel">
-        <span class="tag-pill">Guide</span>
-        <h2><a href="pages/start-here.html">Start Here</a></h2>
-        <p>Write anything into <code>inbox.md</code>. The agent processes notes into connected HTML knowledge pages.</p>
-      </article>
-
-      <article class="panel">
-        <span class="tag-pill">AI &bull; Foundations</span>
-        <h2><a href="pages/ai/mcculloch-pitts-neuron.html">McCulloch–Pitts Neuron</a></h2>
-        <p>The 1943 threshold neuron: binary inputs, threshold &theta;, excitatory vs. inhibitory priority, and logic gates.</p>
-      </article>
-
-      <article class="panel">
-        <span class="tag-pill">System</span>
-        <h2>GitHub Backup</h2>
-        <p>Git and SQLite preserve knowledge history and fast relational graph mapping.</p>
-      </article>
+      <!-- Node Inspector Floating Glass Panel -->
+      <div id="nodeInspector" class="node-inspector" role="dialog" aria-hidden="true">
+        <div class="inspector-header">
+          <span class="inspector-type" id="inspectorType">Concept</span>
+          <button class="inspector-close" id="inspectorClose" title="Close details">&times;</button>
+        </div>
+        <h3 class="inspector-title" id="inspectorTitle">Node Title</h3>
+        <p class="inspector-summary" id="inspectorSummary">Summary of the concept will appear here.</p>
+        <div class="tags-bar" id="inspectorTags" style="margin: 0 0 14px;"></div>
+        <a id="inspectorLink" href="#" class="inspector-link">
+          <span>Open Concept</span>
+          <span>&rarr;</span>
+        </a>
+      </div>
     </section>
   </main>
+
+  <script>
+    /* =========================================================================
+       THE DIGITAL BRAIN — INTERACTIVE GRAPH ENGINE & ACQUIRED KNOWLEDGE NODES
+       ========================================================================= */
+
+    // Acquired Knowledge Graph Data (source of truth from SQLite & HTML pages)
+    const BRAIN_GRAPH = {
+      nodes: [
+        {
+          id: "concept-start-here",
+          title: "Start Here",
+          path: "pages/start-here.html",
+          type: "concept",
+          category: "Guide",
+          color: "#5ee7ff",
+          summary: "Introduction to Akhil's Digital Brain. How notes transform into structured knowledge.",
+          tags: ["meta", "start"],
+          radius: 46
+        },
+        {
+          id: "concept-mcculloch-pitts-neuron",
+          title: "McCulloch–Pitts Neuron",
+          path: "pages/ai/mcculloch-pitts-neuron.html",
+          type: "concept",
+          category: "AI • Foundations",
+          color: "#8b7cff",
+          summary: "The earliest mathematical model of an artificial neuron (1943): binary inputs, threshold θ, excitatory inputs, and absolute inhibitory priority.",
+          tags: ["ai", "neural-networks", "history", "logic-gates", "foundations"],
+          radius: 54
+        }
+      ],
+      edges: [
+        {
+          source: "concept-start-here",
+          target: "concept-mcculloch-pitts-neuron",
+          relation: "references",
+          color: "rgba(94, 231, 255, 0.4)"
+        }
+      ]
+    };
+
+    // Canvas & Viewport Setup
+    const container = document.getElementById("graphContainer");
+    const canvas = document.getElementById("graphCanvas");
+    const ctx = canvas.getContext("2d");
+
+    const searchInput = document.getElementById("brainSearch");
+    const searchResults = document.getElementById("searchResults");
+    const graphStats = document.getElementById("graphStats");
+
+    const inspector = document.getElementById("nodeInspector");
+    const inspectorType = document.getElementById("inspectorType");
+    const inspectorTitle = document.getElementById("inspectorTitle");
+    const inspectorSummary = document.getElementById("inspectorSummary");
+    const inspectorTags = document.getElementById("inspectorTags");
+    const inspectorLink = document.getElementById("inspectorLink");
+    const inspectorClose = document.getElementById("inspectorClose");
+
+    // Camera Transform State
+    let camera = { x: 0, y: 0, scale: 1 };
+    let isPanning = false;
+    let panStart = { x: 0, y: 0 };
+    let draggedNode = null;
+    let hoveredNode = null;
+    let selectedNode = null;
+    let searchQuery = "";
+
+    // Synaptic photon pulses along edges
+    const pulses = [
+      { edgeIndex: 0, progress: 0.1, speed: 0.006 },
+      { edgeIndex: 0, progress: 0.6, speed: 0.005 }
+    ];
+
+    // Background cosmic particle constellation
+    const ambientParticles = [];
+    const PARTICLE_COUNT = 45;
+
+    function initAmbientParticles(w, h) {
+      ambientParticles.length = 0;
+      for (let i = 0; i < PARTICLE_COUNT; i++) {
+        ambientParticles.push({
+          x: (Math.random() - 0.5) * w * 1.5,
+          y: (Math.random() - 0.5) * h * 1.5,
+          vx: (Math.random() - 0.5) * 0.35,
+          vy: (Math.random() - 0.5) * 0.35,
+          radius: Math.random() * 1.8 + 0.6,
+          alpha: Math.random() * 0.4 + 0.15
+        });
+      }
+    }
+
+    // Node Physics Positioning State
+    const nodes = BRAIN_GRAPH.nodes.map((n, i) => {
+      const angle = (i / BRAIN_GRAPH.nodes.length) * Math.PI * 2;
+      const dist = 140;
+      return {
+        ...n,
+        x: Math.cos(angle) * dist,
+        y: Math.sin(angle) * dist,
+        vx: 0,
+        vy: 0,
+        fx: 0,
+        fy: 0,
+        pulsePhase: Math.random() * Math.PI * 2
+      };
+    });
+
+    const edges = BRAIN_GRAPH.edges.map(e => ({
+      ...e,
+      sourceNode: nodes.find(n => n.id === e.source),
+      targetNode: nodes.find(n => n.id === e.target)
+    }));
+
+    function resizeCanvas() {
+      const rect = container.getBoundingClientRect();
+      const dpr = window.devicePixelRatio || 1;
+      canvas.width = rect.width * dpr;
+      canvas.height = rect.height * dpr;
+      ctx.setTransform(1, 0, 0, 1, 0, 0);
+      ctx.scale(dpr, dpr);
+      if (ambientParticles.length === 0) {
+        initAmbientParticles(rect.width, rect.height);
+      }
+    }
+
+    window.addEventListener("resize", resizeCanvas);
+    resizeCanvas();
+
+    // Stats Display
+    if (graphStats) {
+      graphStats.textContent = `${nodes.length} Concepts • ${edges.length} Synapse`;
+    }
+
+    // Force-directed Physics Step
+    function stepPhysics() {
+      const repulsion = 45000;
+      const springLength = 220;
+      const springK = 0.008;
+      const centerGravity = 0.0025;
+      const damping = 0.88;
+
+      // 1. Repulsion between all nodes
+      for (let i = 0; i < nodes.length; i++) {
+        for (let j = i + 1; j < nodes.length; j++) {
+          const a = nodes[i];
+          const b = nodes[j];
+          const dx = b.x - a.x;
+          const dy = b.y - a.y;
+          const distSq = dx * dx + dy * dy + 100;
+          const dist = Math.sqrt(distSq);
+          const force = repulsion / distSq;
+          const fx = (dx / dist) * force;
+          const fy = (dy / dist) * force;
+
+          if (a !== draggedNode) { a.vx -= fx; a.vy -= fy; }
+          if (b !== draggedNode) { b.vx += fx; b.vy += fy; }
+        }
+      }
+
+      // 2. Spring force along edges
+      for (const edge of edges) {
+        if (!edge.sourceNode || !edge.targetNode) continue;
+        const a = edge.sourceNode;
+        const b = edge.targetNode;
+        const dx = b.x - a.x;
+        const dy = b.y - a.y;
+        const dist = Math.hypot(dx, dy) || 1;
+        const displacement = dist - springLength;
+        const force = displacement * springK;
+        const fx = (dx / dist) * force;
+        const fy = (dy / dist) * force;
+
+        if (a !== draggedNode) { a.vx += fx; a.vy += fy; }
+        if (b !== draggedNode) { b.vx -= fx; b.vy -= fy; }
+      }
+
+      // 3. Center gravity & Velocity update
+      for (const n of nodes) {
+        if (n === draggedNode) continue;
+        n.vx -= n.x * centerGravity;
+        n.vy -= n.y * centerGravity;
+
+        n.vx *= damping;
+        n.vy *= damping;
+
+        n.x += n.vx;
+        n.y += n.vy;
+      }
+
+      // 4. Ambient particles update
+      const rect = container.getBoundingClientRect();
+      const boundX = rect.width * 0.9;
+      const boundY = rect.height * 0.9;
+      for (const p of ambientParticles) {
+        p.x += p.vx;
+        p.y += p.vy;
+        if (p.x < -boundX) p.x = boundX;
+        if (p.x > boundX) p.x = -boundX;
+        if (p.y < -boundY) p.y = boundY;
+        if (p.y > boundY) p.y = -boundY;
+      }
+
+      // 5. Synapse Pulses
+      for (const pulse of pulses) {
+        pulse.progress += pulse.speed;
+        if (pulse.progress > 1) pulse.progress = 0;
+      }
+    }
+
+    // Main Render Loop
+    function render(timestamp) {
+      stepPhysics();
+
+      const rect = container.getBoundingClientRect();
+      const width = rect.width;
+      const height = rect.height;
+
+      ctx.clearRect(0, 0, width, height);
+
+      ctx.save();
+      // Apply Camera Center & Transform
+      ctx.translate(width / 2 + camera.x, height / 2 + camera.y);
+      ctx.scale(camera.scale, camera.scale);
+
+      // --- Draw Ambient Starfield & Neural Filaments ---
+      ctx.fillStyle = "rgba(94, 231, 255, 0.6)";
+      for (let i = 0; i < ambientParticles.length; i++) {
+        const p = ambientParticles[i];
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(146, 164, 195, ${p.alpha})`;
+        ctx.fill();
+
+        // Connect nearby ambient particles
+        for (let j = i + 1; j < ambientParticles.length; j++) {
+          const p2 = ambientParticles[j];
+          const d = Math.hypot(p2.x - p.x, p2.y - p.y);
+          if (d < 95) {
+            ctx.strokeStyle = `rgba(94, 231, 255, ${0.08 * (1 - d / 95)})`;
+            ctx.lineWidth = 0.6;
+            ctx.beginPath();
+            ctx.moveTo(p.x, p.y);
+            ctx.lineTo(p2.x, p2.y);
+            ctx.stroke();
+          }
+        }
+      }
+
+      // --- Draw Synaptic Edges ---
+      for (let i = 0; i < edges.length; i++) {
+        const e = edges[i];
+        if (!e.sourceNode || !e.targetNode) continue;
+        const a = e.sourceNode;
+        const b = e.targetNode;
+
+        const isEdgeConnectedToHover = hoveredNode && (hoveredNode === a || hoveredNode === b);
+
+        // Edge Line Glow
+        ctx.strokeStyle = isEdgeConnectedToHover ? "rgba(94, 231, 255, 0.85)" : e.color;
+        ctx.lineWidth = isEdgeConnectedToHover ? 2.5 : 1.5;
+        ctx.beginPath();
+        ctx.moveTo(a.x, a.y);
+        ctx.lineTo(b.x, b.y);
+        ctx.stroke();
+
+        // Edge Relation Label (subtle)
+        const midX = (a.x + b.x) / 2;
+        const midY = (a.y + b.y) / 2;
+        ctx.font = "10px ui-monospace, monospace";
+        ctx.fillStyle = "rgba(146, 164, 195, 0.65)";
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        ctx.fillText(e.relation, midX, midY - 8);
+
+        // Synaptic Photon Pulse along Edge
+        for (const pulse of pulses) {
+          if (pulse.edgeIndex === i) {
+            const px = a.x + (b.x - a.x) * pulse.progress;
+            const py = a.y + (b.y - a.y) * pulse.progress;
+
+            const pulseGlow = ctx.createRadialGradient(px, py, 0, px, py, 10);
+            pulseGlow.addColorStop(0, "#ffffff");
+            pulseGlow.addColorStop(0.3, "#5ee7ff");
+            pulseGlow.addColorStop(1, "rgba(94, 231, 255, 0)");
+
+            ctx.fillStyle = pulseGlow;
+            ctx.beginPath();
+            ctx.arc(px, py, 10, 0, Math.PI * 2);
+            ctx.fill();
+          }
+        }
+      }
+
+      // --- Draw Acquired Knowledge Nodes ---
+      const time = timestamp * 0.002;
+
+      for (const node of nodes) {
+        const isHovered = (hoveredNode === node);
+        const isSelected = (selectedNode === node);
+        const matchesSearch = isNodeMatching(node, searchQuery);
+
+        // Opacity based on search filter
+        let alpha = searchQuery ? (matchesSearch ? 1 : 0.18) : 1;
+        ctx.globalAlpha = alpha;
+
+        const pulseScale = 1 + Math.sin(time + node.pulsePhase) * 0.035;
+        const r = node.radius * (isHovered ? 1.15 : 1) * pulseScale;
+
+        // 1. Outer Radial Glow Aura
+        const aura = ctx.createRadialGradient(node.x, node.y, r * 0.5, node.x, node.y, r * 1.8);
+        aura.addColorStop(0, node.color + "55");
+        aura.addColorStop(0.6, node.color + "18");
+        aura.addColorStop(1, "transparent");
+        ctx.fillStyle = aura;
+        ctx.beginPath();
+        ctx.arc(node.x, node.y, r * 1.8, 0, Math.PI * 2);
+        ctx.fill();
+
+        // 2. Node Body Core (Dark sleek surface with subtle gradient)
+        const bodyGrad = ctx.createRadialGradient(node.x - r * 0.3, node.y - r * 0.3, 0, node.x, node.y, r);
+        bodyGrad.addColorStop(0, "#192841");
+        bodyGrad.addColorStop(0.7, "#0c1424");
+        bodyGrad.addColorStop(1, "#070b14");
+        ctx.fillStyle = bodyGrad;
+        ctx.beginPath();
+        ctx.arc(node.x, node.y, r, 0, Math.PI * 2);
+        ctx.fill();
+
+        // 3. Node Outer Rim Ring
+        ctx.strokeStyle = isHovered || isSelected ? "#ffffff" : node.color;
+        ctx.lineWidth = isHovered || isSelected ? 3.5 : 2;
+        ctx.stroke();
+
+        // 4. Inner Orbit Ring / Constellation Glyph
+        ctx.strokeStyle = node.color + "44";
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.arc(node.x, node.y, r * 0.65, 0, Math.PI * 2);
+        ctx.stroke();
+
+        // Central Core Bead
+        ctx.fillStyle = node.color;
+        ctx.beginPath();
+        ctx.arc(node.x, node.y, 4.5, 0, Math.PI * 2);
+        ctx.fill();
+
+        // 5. Crisp Text Label with Frosted Backdrop Pill
+        const labelText = node.title;
+        ctx.font = isHovered ? "bold 13px Inter, sans-serif" : "600 12px Inter, sans-serif";
+        const textMetrics = ctx.measureText(labelText);
+        const textW = textMetrics.width;
+        const textH = 20;
+        const pillY = node.y + r + 14;
+
+        // Label Pill Background
+        ctx.fillStyle = "rgba(7, 11, 20, 0.85)";
+        ctx.strokeStyle = isHovered ? node.color : "rgba(255, 255, 255, 0.12)";
+        ctx.lineWidth = 1;
+
+        roundRect(ctx, node.x - textW / 2 - 8, pillY - textH / 2, textW + 16, textH, 6);
+        ctx.fill();
+        ctx.stroke();
+
+        // Label Text
+        ctx.fillStyle = isHovered ? "#ffffff" : "#e9f1ff";
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        ctx.fillText(labelText, node.x, pillY);
+
+        ctx.globalAlpha = 1;
+      }
+
+      ctx.restore();
+      requestAnimationFrame(render);
+    }
+
+    // Helper: Rounded Rectangle
+    function roundRect(c, x, y, w, h, r) {
+      c.beginPath();
+      c.moveTo(x + r, y);
+      c.arcTo(x + w, y, x + w, y + h, r);
+      c.arcTo(x + w, y + h, x, y + h, r);
+      c.arcTo(x, y + h, x, y, r);
+      c.arcTo(x, y, x + w, y, r);
+      c.closePath();
+    }
+
+    // Search Matching Logic
+    function isNodeMatching(node, query) {
+      if (!query) return true;
+      const q = query.toLowerCase();
+      return (
+        node.title.toLowerCase().includes(q) ||
+        node.summary.toLowerCase().includes(q) ||
+        node.category.toLowerCase().includes(q) ||
+        node.tags.some(t => t.toLowerCase().includes(q))
+      );
+    }
+
+    // Coordinate Translation
+    function screenToWorld(clientX, clientY) {
+      const rect = canvas.getBoundingClientRect();
+      const screenX = clientX - rect.left;
+      const screenY = clientY - rect.top;
+      const worldX = (screenX - rect.width / 2 - camera.x) / camera.scale;
+      const worldY = (screenY - rect.height / 2 - camera.y) / camera.scale;
+      return { x: worldX, y: worldY };
+    }
+
+    function getNodeAt(worldX, worldY) {
+      for (let i = nodes.length - 1; i >= 0; i--) {
+        const n = nodes[i];
+        const dist = Math.hypot(worldX - n.x, worldY - n.y);
+        if (dist <= n.radius + 8) return n;
+      }
+      return null;
+    }
+
+    // Interactive Node Inspector
+    function showInspector(node) {
+      if (!node) {
+        inspector.classList.remove("visible");
+        inspector.setAttribute("aria-hidden", "true");
+        selectedNode = null;
+        return;
+      }
+      selectedNode = node;
+      inspectorType.textContent = node.category || "Concept";
+      inspectorTitle.textContent = node.title;
+      inspectorSummary.textContent = node.summary;
+      inspectorLink.href = node.path;
+
+      inspectorTags.innerHTML = "";
+      for (const tag of node.tags) {
+        const pill = document.createElement("span");
+        pill.className = "tag-pill";
+        pill.textContent = tag;
+        inspectorTags.appendChild(pill);
+      }
+
+      inspector.classList.add("visible");
+      inspector.setAttribute("aria-hidden", "false");
+    }
+
+    inspectorClose.addEventListener("click", () => showInspector(null));
+
+    // Mouse & Pointer Interactions
+    canvas.addEventListener("mousedown", (e) => {
+      const pos = screenToWorld(e.clientX, e.clientY);
+      const hit = getNodeAt(pos.x, pos.y);
+
+      if (hit) {
+        draggedNode = hit;
+      } else {
+        isPanning = true;
+        panStart = { x: e.clientX - camera.x, y: e.clientY - camera.y };
+      }
+    });
+
+    window.addEventListener("mousemove", (e) => {
+      const pos = screenToWorld(e.clientX, e.clientY);
+
+      if (draggedNode) {
+        draggedNode.x = pos.x;
+        draggedNode.y = pos.y;
+        draggedNode.vx = 0;
+        draggedNode.vy = 0;
+        return;
+      }
+
+      if (isPanning) {
+        camera.x = e.clientX - panStart.x;
+        camera.y = e.clientY - panStart.y;
+        return;
+      }
+
+      const hit = getNodeAt(pos.x, pos.y);
+      if (hit !== hoveredNode) {
+        hoveredNode = hit;
+        canvas.style.cursor = hit ? "pointer" : "grab";
+        if (hit && !selectedNode) {
+          showInspector(hit);
+        }
+      }
+    });
+
+    window.addEventListener("mouseup", (e) => {
+      if (draggedNode) {
+        const pos = screenToWorld(e.clientX, e.clientY);
+        const hit = getNodeAt(pos.x, pos.y);
+        if (hit && hit === draggedNode) {
+          showInspector(hit);
+        }
+        draggedNode = null;
+      }
+      isPanning = false;
+    });
+
+    // Double Click to Directly Open Page
+    canvas.addEventListener("dblclick", (e) => {
+      const pos = screenToWorld(e.clientX, e.clientY);
+      const hit = getNodeAt(pos.x, pos.y);
+      if (hit && hit.path) {
+        window.location.href = hit.path;
+      }
+    });
+
+    // Touch Support
+    let lastTouch = null;
+    canvas.addEventListener("touchstart", (e) => {
+      if (e.touches.length === 1) {
+        const t = e.touches[0];
+        const pos = screenToWorld(t.clientX, t.clientY);
+        const hit = getNodeAt(pos.x, pos.y);
+        if (hit) {
+          draggedNode = hit;
+          showInspector(hit);
+        } else {
+          isPanning = true;
+          panStart = { x: t.clientX - camera.x, y: t.clientY - camera.y };
+        }
+      }
+    }, { passive: false });
+
+    canvas.addEventListener("touchmove", (e) => {
+      if (e.touches.length === 1) {
+        const t = e.touches[0];
+        const pos = screenToWorld(t.clientX, t.clientY);
+        if (draggedNode) {
+          draggedNode.x = pos.x;
+          draggedNode.y = pos.y;
+          e.preventDefault();
+        } else if (isPanning) {
+          camera.x = t.clientX - panStart.x;
+          camera.y = t.clientY - panStart.y;
+          e.preventDefault();
+        }
+      }
+    }, { passive: false });
+
+    canvas.addEventListener("touchend", () => {
+      draggedNode = null;
+      isPanning = false;
+    });
+
+    // Smooth Mouse Wheel Zoom
+    canvas.addEventListener("wheel", (e) => {
+      e.preventDefault();
+      const zoomFactor = e.deltaY < 0 ? 1.12 : 0.89;
+      const newScale = Math.min(Math.max(camera.scale * zoomFactor, 0.4), 3.0);
+
+      const rect = canvas.getBoundingClientRect();
+      const mouseX = e.clientX - rect.left - rect.width / 2;
+      const mouseY = e.clientY - rect.top - rect.height / 2;
+
+      camera.x -= mouseX * (newScale / camera.scale - 1);
+      camera.y -= mouseY * (newScale / camera.scale - 1);
+      camera.scale = newScale;
+    }, { passive: false });
+
+    // HUD Zoom Buttons
+    document.getElementById("zoomInBtn").addEventListener("click", () => {
+      camera.scale = Math.min(camera.scale * 1.25, 3.0);
+    });
+
+    document.getElementById("zoomOutBtn").addEventListener("click", () => {
+      camera.scale = Math.max(camera.scale * 0.8, 0.4);
+    });
+
+    document.getElementById("resetViewBtn").addEventListener("click", () => {
+      camera.x = 0;
+      camera.y = 0;
+      camera.scale = 1;
+    });
+
+    // Live Search Feature
+    function updateSearch(q) {
+      searchQuery = q.trim();
+      if (!searchQuery) {
+        searchResults.classList.remove("active");
+        searchResults.innerHTML = "";
+        return;
+      }
+
+      const matches = nodes.filter(n => isNodeMatching(n, searchQuery));
+
+      if (matches.length > 0) {
+        searchResults.innerHTML = "";
+        for (const m of matches) {
+          const item = document.createElement("a");
+          item.className = "search-result-item";
+          item.href = m.path;
+          item.innerHTML = `
+            <div class="search-result-title">${m.title}</div>
+            <div class="search-result-summary">${m.summary}</div>
+          `;
+          item.addEventListener("mouseenter", () => {
+            showInspector(m);
+            focusNode(m);
+          });
+          searchResults.appendChild(item);
+        }
+        searchResults.classList.add("active");
+      } else {
+        searchResults.innerHTML = `
+          <div style="padding: 14px; color: var(--muted); font-size: 0.85rem; text-align: center;">
+            No matching concepts found
+          </div>
+        `;
+        searchResults.classList.add("active");
+      }
+    }
+
+    function focusNode(node) {
+      camera.x = -node.x * camera.scale;
+      camera.y = -node.y * camera.scale;
+    }
+
+    searchInput.addEventListener("input", (e) => updateSearch(e.target.value));
+
+    // Keyboard Shortcuts: '/' to search, 'Escape' to close
+    window.addEventListener("keydown", (e) => {
+      if (e.key === "/" && document.activeElement !== searchInput) {
+        e.preventDefault();
+        searchInput.focus();
+        searchInput.select();
+      } else if (e.key === "Escape") {
+        searchResults.classList.remove("active");
+        searchInput.blur();
+        showInspector(null);
+      } else if (e.key === "Enter" && document.activeElement === searchInput) {
+        const matches = nodes.filter(n => isNodeMatching(n, searchQuery));
+        if (matches.length > 0) {
+          window.location.href = matches[0].path;
+        }
+      }
+    });
+
+    // Close search dropdown on click outside
+    document.addEventListener("click", (e) => {
+      if (!e.target.closest(".search-wrapper")) {
+        searchResults.classList.remove("active");
+      }
+    });
+
+    // Start Animation Loop
+    requestAnimationFrame(render);
+  </script>
 </body>
 </html>
