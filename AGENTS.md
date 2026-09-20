@@ -20,6 +20,7 @@ Raw notes → understand → locate relevant page → edit HTML → update links
 11. Before creating a page, search existing pages/concepts.
 12. Keep the repository portable and GitHub-friendly.
 13. Never commit API keys or secrets.
+14. Keep agent completion replies short and token-efficient. Do not restate or re-explain note contents.
 
 ## NOTE WORKFLOW
 The user writes raw material into `inbox.md`.
@@ -35,6 +36,7 @@ Process:
 8. Update `index.html` only when the page structure changes.
 9. Clear `inbox.md` after successful processing.
 10. Keep a Git history of meaningful changes.
+11. Reply with a short summary (changed files, graph edges, git status) to minimize output tokens.
 
 ## GEMINI TOKEN MINIMIZATION
 Never send the whole repository or whole knowledge base to Gemini.
@@ -43,6 +45,8 @@ Use:
 raw note → local SQLite/FTS search → top candidates → compact excerpts/summaries → Gemini.
 
 Do not use Gemini for file I/O, sorting, link generation, timestamps, indexing, or other deterministic operations.
+
+Keep assistant responses brief (2–4 lines max). Report only the affected page links, graph updates, and git commit status. Never regurgitate note contents back to the user.
 
 ## KNOWLEDGE GRAPH
 Every knowledge page should have stable metadata such as:
